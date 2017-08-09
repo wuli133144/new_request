@@ -234,11 +234,12 @@ size_t onRecv(int fd,char *buf,size_t len){
                      printf("[(nread=%d)]\n",nread);
                      nleft-=nread;
                      printf("[>>>>>>>nleft=%d]\n",nleft);
+                     
                      strncat(buf,ptr,strlen(ptr));
                      ptr+=nread;
 
                      printf("nleft=[%d]\n",nleft);
-                     
+                
         }
         printf("[(%d)(%d ,%d)]\n",nread,len,nleft);
         printf(" %d %d [%s]\n", getpid(), len-nleft,buf);

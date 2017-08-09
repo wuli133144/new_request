@@ -165,8 +165,10 @@ void jump_task_pool_obj(int fd[2]) {
          int cnt=Epoll_wait(epollfd,events,EPOLLEVENTS,-1);
          
          for(i=0;i<cnt;i++){
+                 
                  fd_set=events[i].data.fd;
-                 if(fd_set==fd[0]){
+                 if(fd_set==fd[0]&&events[i].events&EPOLLIN){
+                      printf(">>>CNT%d\n",cnt);
                       //note:add clientfd
                       int readfd=Sock_fd_read(fd[0],buf,2,&clientfd);
                       if(readfd<0){
@@ -183,22 +185,20 @@ void jump_task_pool_obj(int fd[2]) {
                        printf("new clientfd in fork()\n");
                        Setnoblock(clientfd,O_NONBLOCK);
                        Epoll_ctl(epollfd,EPOLL_CTL_ADD,clientfd,&events);
+                       
 
                        /*kill(getppid(),SIGINT);//express this segment is ok*/
 
-                 }else  
-                 { 
+                 }else  { 
                     if(events[i].events&EPOLLIN){
                                    
-                                   
-                                    void *ptr=events[i].data.ptr;
-                                    int newfd=events[i].data.fd;
-                                    http_tcp *tcp=(http_tcp *)ptr;
-                                  
+                                  http_tcp* newx=(http_tcp *)events[i].data.ptr;
+                                  int newfd=newx->fd;
+                                  if(newfd==clientfd){
                                     /*core handler*/
-                                    http_request *req=tcp->callback(tcp->http_contxt,\
-                                                  onRecv,tcp->fd,                    \
-                                                  (char *)tcp->buf,READ_COUNT);
+                                    http_request *req=newx->callback(newx->http_contxt,\
+                                                  onRecv,newfd,                        \
+                                                  (char *)newx->buf,READ_COUNT);
                                      
                                      if(req==NULL){
                                           printf("xxxx invalid req\n");
@@ -210,6 +210,7 @@ void jump_task_pool_obj(int fd[2]) {
                                     events1.events=EPOLLOUT;
                                     events1.data.ptr=(void *)req;
                                     Epoll_ctl(epollfd,EPOLL_CTL_MOD,clientfd,&events1);    
+                                  }else break;
                                             
                     }else if(events[i].events&EPOLLOUT){
                                   /*clientfd writeable*/
