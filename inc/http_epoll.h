@@ -21,7 +21,6 @@ int Open_listen() {
 /*@open listen end@*/
 
 /*@start epoll circle@*/
-
 void Open_epoll(int connfd) { return http_do_epoll(connfd); }
 /*@end@*/
 

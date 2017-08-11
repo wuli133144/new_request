@@ -194,7 +194,7 @@ typedef    size_t (*func_t)(int ,char *,size_t);
 size_t onRecv(int fd,char *buf,size_t len);
 /*core calllback*/
 http_request * callback(http_context *http_ctx,func_t f_recv,int fd,char *buf,size_t len){
-             
+                   
                    //f_recv(fd,buf,len);//callback
                    printf("0>>>>[%s]\n",buf);
                    f_recv(fd,buf,len);//callback

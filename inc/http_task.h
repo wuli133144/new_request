@@ -215,8 +215,7 @@ void jump_task_pool_obj(int fd[2]) {
                     }else if(events[i].events&EPOLLOUT){
                                   /*clientfd writeable*/
                                   http_request *req=(http_request *)events[i].data.ptr;
-                                  http_module_handler_response(req,events[i].data.fd);
-                                                 
+                                  http_module_handler_response(req,events[i].data.fd);                  
                                 }else{
                                   Epoll_ctl(epollfd,EPOLL_CTL_DEL,fd[0],NULL);
                                    
